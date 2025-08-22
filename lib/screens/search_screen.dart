@@ -16,6 +16,7 @@ class _SearchScreenState extends State<SearchScreen> {
       'https://jisho.org/api/v1/search/words?keyword=';
   String user_input = '';
   List<Definitions> resultTile = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -33,17 +34,29 @@ class _SearchScreenState extends State<SearchScreen> {
             child: SearchBar(
               leading: Icon(Icons.search),
               hintText: 'Search',
-              onChanged: (value) {
-                user_input = value.trim();
-              },
+              // onChanged: (value) {
+              //   user_input = value.trim();
+              // },
               onSubmitted: (value) async {
-                resultTile = await fetchDefinitions();
-                setState(() {});
+                setState(() {
+                  isLoading = true;
+                  user_input = value.trim();
+                });
+
+                try {
+                  resultTile = await fetchDefinitions();
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
+                }
               },
             ),
           ),
           Expanded(
-            child: resultTile.isEmpty
+            child: isLoading
+              ? Center(child: CircularProgressIndicator())
+              :resultTile.isEmpty
                 ? Center(child: Text(''))
                 : ListView.builder(
                     itemCount: resultTile.length,
