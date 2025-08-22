@@ -63,7 +63,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       return ListTile(
                         title: Text("$title, $reading"),
-                        // title: Text("$title"),
                         subtitle: Text(subtitle),
                       );
                     },
