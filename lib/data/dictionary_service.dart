@@ -1,14 +1,16 @@
+import 'dart:io';
+
 import 'definitions.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DictionaryService {
-  static const dictionary_source =
-      'https://jisho.org/api/v1/search/words?keyword=';
+  final http.Client client;
 
-  DictionaryService();
+  DictionaryService([http.Client? client]) :client = client ?? http.Client();
 
   String getSearchUrl(String keyword) {
+    const dictionary_source = 'https://jisho.org/api/v1/search/words?keyword=';
     return dictionary_source + keyword;
   }
 
