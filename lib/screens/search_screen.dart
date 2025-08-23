@@ -26,32 +26,35 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Japanese Dictionary')),
+      appBar: PreferredSize( 
+        preferredSize: Size.fromHeight(50),
+        child: AppBar(
+          backgroundColor: const Color.fromARGB(255, 210, 24, 11),
+          title: Text('Japanese Dictionary'),
+        ),
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: SearchBar(
-              leading: Icon(Icons.search),
-              hintText: 'Search',
-              // onChanged: (value) {
-              //   user_input = value.trim();
-              // },
-              onSubmitted: (value) async {
-                setState(() {
-                  isLoading = true;
-                  user_input = value.trim();
-                });
-
-                try {
-                  resultTile = await fetchDefinitions();
-                } finally {
-                  setState(() {
-                    isLoading = false;
-                  });
-                }
-              },
-            ),
+                    leading: Icon(Icons.search),
+                    hintText: 'Search',
+                    onSubmitted: (value) async {
+                      setState(() {
+                        isLoading = true;
+                        user_input = value.trim();
+                      });
+                          
+                      try {
+                        resultTile = await fetchDefinitions();
+                      } finally {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
+                    },
+                  ),
           ),
           Expanded(
             child: isLoading
