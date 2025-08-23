@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:japanese_dict/data/definitions.dart';
+import 'package:japanese_dict/data/dictionary_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -12,8 +13,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  static const dictionary_source =
-      'https://jisho.org/api/v1/search/words?keyword=';
+  DictionaryService dictService = DictionaryService();
   String user_input = '';
   List<Definitions> resultTile = [];
   bool isLoading = false;
@@ -26,7 +26,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize( 
+      appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
           backgroundColor: const Color.fromARGB(255, 210, 24, 11),
@@ -38,28 +38,28 @@ class _SearchScreenState extends State<SearchScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SearchBar(
-                    leading: Icon(Icons.search),
-                    hintText: 'Search',
-                    onSubmitted: (value) async {
-                      setState(() {
-                        isLoading = true;
-                        user_input = value.trim();
-                      });
-                          
-                      try {
-                        resultTile = await fetchDefinitions();
-                      } finally {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    },
-                  ),
+              leading: Icon(Icons.search),
+              hintText: 'Search',
+              onSubmitted: (value) async {
+                setState(() {
+                  isLoading = true;
+                  user_input = value.trim();
+                });
+
+                try {
+                  resultTile = await dictService.fetchDefinitions(user_input);
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
+                }
+              },
+            ),
           ),
           Expanded(
             child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              :resultTile.isEmpty
+                ? Center(child: CircularProgressIndicator())
+                : resultTile.isEmpty
                 ? Center(child: Text(''))
                 : ListView.builder(
                     itemCount: resultTile.length,
@@ -87,26 +87,5 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
-  }
-
-  String getSearchUrl(String keyword) {
-    return dictionary_source + keyword;
-  }
-
-  Future<List<Definitions>> fetchDefinitions() async {
-    final Uri url = Uri.parse(getSearchUrl(user_input));
-    final response = await http.get(url);
-    final Map<String, dynamic> definitionJson = json.decode(response.body);
-    final List<dynamic> dataList = definitionJson['data'];
-
-    final List<Definitions> definitionsList = dataList
-        .map((item) => Definitions.fromJSON(item))
-        .toList();
-
-    // for (Definitions obj in definitionsList) {
-    //   print(obj);
-    // }
-
-    return definitionsList;
   }
 }
