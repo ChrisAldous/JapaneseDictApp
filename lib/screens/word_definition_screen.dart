@@ -12,6 +12,10 @@ class WordDefinitionScreen extends StatelessWidget {
     final String kanji_word = the_word.words[0].word;
     final KanaKit kanaKit = KanaKit();
 
+    for (JapaneseList obj in the_word.words) {
+      print(obj);
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
@@ -21,9 +25,7 @@ class WordDefinitionScreen extends StatelessWidget {
         ),
       ),
       body: Column(
-        children: [
-          Text(kanaKit.toRomaji(the_word.words[0].reading))
-        ],
+        children: [Text(kanaKit.toRomaji(the_word.words[0].reading))],
       ),
     );
   }

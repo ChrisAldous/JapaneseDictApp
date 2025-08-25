@@ -76,16 +76,25 @@ class _SearchScreenState extends State<SearchScreen> {
                           ? item.definition.join(', ')
                           : 'No Definition';
 
+                      final String title_text;
+                      if (title == '') {
+                        title_text = reading;
+                      } else {
+                        title_text = '$title, $reading';
+                      }
                       // print("$title, $reading");
 
                       return InkWell(
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (BuildContext context) => WordDefinitionScreen(the_word: item))
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  WordDefinitionScreen(the_word: item),
+                            ),
                           );
                         },
                         child: ListTile(
-                          title: Text("$title, $reading"),
+                          title: Text(title_text),
                           subtitle: Text(subtitle),
                         ),
                       );
