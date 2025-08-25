@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:japanese_dict/data/definitions.dart';
 import 'package:japanese_dict/data/dictionary_service.dart';
+import 'package:japanese_dict/screens/word_definition_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -77,9 +78,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       // print("$title, $reading");
 
-                      return ListTile(
-                        title: Text("$title, $reading"),
-                        subtitle: Text(subtitle),
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (BuildContext context) => WordDefinitionScreen(the_word: item))
+                          );
+                        },
+                        child: ListTile(
+                          title: Text("$title, $reading"),
+                          subtitle: Text(subtitle),
+                        ),
                       );
                     },
                   ),

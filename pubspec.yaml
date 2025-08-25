@@ -37,6 +37,7 @@ dependencies:
   http: ^1.5.0
   mockito: ^5.5.0
   build_runner: ^2.7.0
+  kana_kit: ^2.1.1
   
 
 
