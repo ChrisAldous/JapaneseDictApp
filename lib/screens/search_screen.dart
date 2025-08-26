@@ -18,10 +18,12 @@ class _SearchScreenState extends State<SearchScreen> {
   String user_input = '';
   List<Definitions> resultTile = [];
   bool isLoading = false;
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController();
   }
 
   @override
@@ -39,6 +41,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SearchBar(
+              controller: _controller,
               leading: Icon(Icons.search),
               hintText: 'Search',
               onSubmitted: (value) async {
@@ -104,5 +107,11 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

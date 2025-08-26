@@ -10,6 +10,7 @@ class WordDefinitionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String kanji_word = the_word.words[0].word;
+    final String kana_word = the_word.words[0].reading;
     final KanaKit kanaKit = KanaKit();
 
     for (JapaneseList obj in the_word.words) {
@@ -19,14 +20,39 @@ class WordDefinitionScreen extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
-        child: AppBar(
-          backgroundColor: const Color.fromARGB(255, 210, 24, 11),
-          title: Text(kanji_word),
+        child: AppBar(backgroundColor: const Color.fromARGB(255, 210, 24, 11)),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                (kanji_word != null && kanji_word.isNotEmpty)
+                    ? kanji_word
+                    : kana_word,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              fixedLabeledRow('Hiragana', kana_word),
+              fixedLabeledRow('Romaji', kanaKit.toRomaji(kana_word)),
+            ],
+          ),
         ),
       ),
-      body: Column(
-        children: [Text(kanaKit.toRomaji(the_word.words[0].reading))],
-      ),
+    );
+  }
+
+  Widget fixedLabeledRow(String label, String content) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(label, textAlign: TextAlign.left,),
+        ),
+        Flexible(child: Text(content))
+      ],
     );
   }
 }

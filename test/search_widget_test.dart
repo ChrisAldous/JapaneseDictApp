@@ -19,6 +19,6 @@ void main() {
     await testor.enterText(search_bar_text, 'dog');
     await testor.pump();
 
-    expect(find.text('dog'), findsOneWidget);
+    expect(controller?.text ?? '', 'dog');
   });
 }
