@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:japanese_dict/data/definitions.dart';
+import 'package:japanese_dict/data/definitions_service.dart';
 import 'package:kana_kit/kana_kit.dart';
 
 class WordDefinitionScreen extends StatelessWidget {
@@ -9,10 +10,12 @@ class WordDefinitionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DefinitionsService definitionsService = DefinitionsService(definitions: the_word);
     final String kanji_word = the_word.words[0].word;
     final String kana_word = the_word.words[0].reading;
     final List<String> definitions = the_word.definition;
     final KanaKit kanaKit = KanaKit();
+    
     // print(the_word);
     // print("-----------");
     // print(the_word.definition);
@@ -51,8 +54,17 @@ class WordDefinitionScreen extends StatelessWidget {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 definitions.map((word) => '$word').join(', '),
-                style: TextStyle(fontSize: 16,), 
+                style: TextStyle(fontSize: 16),
               ),
+            ),
+
+            Text(
+              'Other Readings:',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+            Text(
+              definitionsService.giveOtherReadings().map((word) => '$word').join('\n'),
+              style: TextStyle(fontSize: 16)
             ),
           ],
         ),
