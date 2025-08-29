@@ -13,7 +13,6 @@ class WordDefinitionScreen extends StatelessWidget {
     final DefinitionsService definitionsService = DefinitionsService(
       definitions: the_word,
     );
-    print(the_word.words);
     final String kanji_word = the_word.words[0].word;
     final String kana_word = the_word.words[0].reading;
     final List<String> definitions = the_word.definition;
