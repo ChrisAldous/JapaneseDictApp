@@ -24,4 +24,8 @@ class DefinitionsService {
       return [];
     }
   }
+
+  String giveEnglishDefinitions() {
+    return definitions.definition.map((engWord) => '$engWord').join(', ');
+  }
 }

@@ -10,19 +10,14 @@ class WordDefinitionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DefinitionsService definitionsService = DefinitionsService(definitions: the_word);
+    final DefinitionsService definitionsService = DefinitionsService(
+      definitions: the_word,
+    );
+    print(the_word.words);
     final String kanji_word = the_word.words[0].word;
     final String kana_word = the_word.words[0].reading;
     final List<String> definitions = the_word.definition;
     final KanaKit kanaKit = KanaKit();
-    
-    // print(the_word);
-    // print("-----------");
-    // print(the_word.definition);
-
-    for (JapaneseList obj in the_word.words) {
-      print(obj);
-    }
 
     return Scaffold(
       appBar: PreferredSize(
@@ -63,8 +58,11 @@ class WordDefinitionScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
             Text(
-              definitionsService.giveOtherReadings().map((word) => '$word').join('\n'),
-              style: TextStyle(fontSize: 16)
+              definitionsService
+                  .giveOtherReadings()
+                  .map((word) => '$word')
+                  .join('\n'),
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),

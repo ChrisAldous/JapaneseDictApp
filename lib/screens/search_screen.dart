@@ -79,12 +79,12 @@ class _SearchScreenState extends State<SearchScreen> {
                           ? item.definition.join(', ')
                           : 'No Definition';
 
-                      final String title_text;
-                      if (title == '') {
-                        title_text = reading;
-                      } else {
-                        title_text = '$title, $reading';
-                      }
+                      // final String title_text;
+                      // if (title == '') {
+                      //   title_text = reading;
+                      // } else {
+                      //   title_text = '$title, $reading';
+                      // }
                       // print("$title, $reading");
 
                       return InkWell(
@@ -97,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                         },
                         child: ListTile(
-                          title: Text(title_text),
+                          title: ListTileTitle(title, reading),
                           subtitle: Text(subtitle),
                         ),
                       );
@@ -107,6 +107,10 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
+  }
+
+  Widget ListTileTitle(String kanji, String readings) {
+    return Row(children: [Text(kanji), SizedBox(width: 25,), Text('[$readings]', style: TextStyle(color: Colors.red)),]);
   }
 
   @override
