@@ -110,7 +110,23 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget ListTileTitle(String kanji, String readings) {
-    return Row(children: [Text(kanji), SizedBox(width: 25,), Text('[$readings]', style: TextStyle(color: Colors.red)),]);
+    return Row(children: [
+      Text(
+        kanji,
+        style: TextStyle(
+          fontWeight: FontWeight.bold
+        ),
+      ), 
+      SizedBox(width: 25,),
+      Text(
+        '[$readings]',
+        style: TextStyle(
+          color: Colors.red,
+          // fontWeight: FontWeight.bold,
+          )
+        ),
+      ]
+    );
   }
 
   @override
