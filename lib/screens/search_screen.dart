@@ -110,23 +110,32 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget ListTileTitle(String kanji, String readings) {
-    return Row(children: [
-      Text(
-        kanji,
+    if(kanji == '' || kanji == null){
+      return Text(
+        readings,
         style: TextStyle(
           fontWeight: FontWeight.bold
-        ),
-      ), 
-      SizedBox(width: 25,),
-      Text(
-        '[$readings]',
-        style: TextStyle(
-          color: Colors.red,
-          // fontWeight: FontWeight.bold,
-          )
-        ),
-      ]
-    );
+        )
+      );
+    } else {
+      return Row(children: [
+        Text(
+          kanji,
+          style: TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+        ), 
+        SizedBox(width: 25,),
+        Text(
+          '[$readings]',
+          style: TextStyle(
+            color: Colors.red,
+            // fontWeight: FontWeight.bold,
+            )
+          ),
+        ]
+      );
+    }
   }
 
   @override
