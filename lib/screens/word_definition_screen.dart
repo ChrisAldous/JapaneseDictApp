@@ -1,21 +1,66 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/data/definitions.dart';
 import 'package:japanese_dict/data/definitions_service.dart';
 import 'package:kana_kit/kana_kit.dart';
+import 'package:japanese_dict/data/tables/visited_word.dart';
+import 'package:japanese_dict/data/daos/visited_word_dao.dart';
+import 'package:provider/provider.dart';
 
-class WordDefinitionScreen extends StatelessWidget {
+class WordDefinitionScreen extends StatefulWidget {
   const WordDefinitionScreen({super.key, required this.the_word});
 
   final Definitions the_word;
 
   @override
+  State<WordDefinitionScreen> createState() => _WordDefinitionScreenState();
+}
+
+class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
+  late DbHelper db;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      db = context.read<DbHelper>();
+      _saveVisitedWord();
+    });
+  }
+
+  Future<void> _saveVisitedWord() async {
+    final word = widget.the_word;
+    final kanji = word.words[0].word;
+    final kana = word.words[0].reading;
+    final definition = word.definition.join(', ');
+
+    final kanjiToAdd = kanji.isNotEmpty ? kanji : '';
+
+    final exists = await db.visitedWordDao.recordExists(
+      kanji: kanjiToAdd,
+      kana: kana,
+    );
+
+    if (!exists) {
+      final visitedWord = VisitedWordCompanion.insert(
+        kanji: kanji.isNotEmpty ? drift.Value(kanji) : drift.Value.absent(),
+        kana: kana,
+        definition: definition,
+      );
+
+      await db.visitedWordDao.insertVisitedWord(visitedWord);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final DefinitionsService definitionsService = DefinitionsService(
-      definitions: the_word,
+      definitions: widget.the_word,
     );
-    final String kanji_word = the_word.words[0].word;
-    final String kana_word = the_word.words[0].reading;
-    final List<String> definitions = the_word.definition;
+    final String kanji_word = widget.the_word.words[0].word;
+    final String kana_word = widget.the_word.words[0].reading;
+    final List<String> definitions = widget.the_word.definition;
     final KanaKit kanaKit = KanaKit();
 
     return Scaffold(
@@ -65,6 +110,11 @@ class WordDefinitionScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          db.printVisitedWords();
+        },
       ),
     );
   }

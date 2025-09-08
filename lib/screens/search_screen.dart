@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/data/definitions.dart';
 import 'package:japanese_dict/data/dictionary_service.dart';
 import 'package:japanese_dict/screens/word_definition_screen.dart';
@@ -102,30 +103,21 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget ListTileTitle(String kanji, String readings) {
-    if(kanji == '' || kanji == null){
-      return Text(
-        readings,
-        style: TextStyle(
-          fontWeight: FontWeight.bold
-        )
-      );
+    if (kanji == '' || kanji == null) {
+      return Text(readings, style: TextStyle(fontWeight: FontWeight.bold));
     } else {
-      return Row(children: [
-        Text(
-          kanji,
-          style: TextStyle(
-            fontWeight: FontWeight.bold
+      return Row(
+        children: [
+          Text(kanji, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(width: 25),
+          Text(
+            '[$readings]',
+            style: TextStyle(
+              color: Colors.red,
+              // fontWeight: FontWeight.bold,
+            ),
           ),
-        ), 
-        SizedBox(width: 25,),
-        Text(
-          '[$readings]',
-          style: TextStyle(
-            color: Colors.red,
-            // fontWeight: FontWeight.bold,
-            )
-          ),
-        ]
+        ],
       );
     }
   }

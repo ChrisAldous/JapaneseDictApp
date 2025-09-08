@@ -1051,6 +1051,10 @@ abstract class _$DbHelper extends GeneratedDatabase {
   late final $FlashCardsTable flashCards = $FlashCardsTable(this);
   late final $VisitedWordTable visitedWord = $VisitedWordTable(this);
   late final $NotesTable notes = $NotesTable(this);
+  late final VisitedWordDao visitedWordDao = VisitedWordDao(this as DbHelper);
+  late final NotesDao notesDao = NotesDao(this as DbHelper);
+  late final FoldersDao foldersDao = FoldersDao(this as DbHelper);
+  late final FlashcardsDao flashcardsDao = FlashcardsDao(this as DbHelper);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
