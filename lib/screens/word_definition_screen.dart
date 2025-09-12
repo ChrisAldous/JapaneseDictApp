@@ -19,13 +19,17 @@ class WordDefinitionScreen extends StatefulWidget {
 
 class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
   late DbHelper db;
+  late TextEditingController controller;
+  int? visitedWordId;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    controller = TextEditingController();
+    Future.microtask(() async {
       db = context.read<DbHelper>();
-      _saveVisitedWord();
+      await _saveVisitedWord();
+      await _loadNoteIfExists();
     });
   }
 
@@ -51,6 +55,20 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
 
       await db.visitedWordDao.insertVisitedWord(visitedWord);
     }
+
+    final visited = await db.visitedWordDao.getVisitedWord(kanji, kana);
+    visitedWordId = visited?.id;
+  }
+
+  Future<void> _loadNoteIfExists() async {
+    if (visitedWordId == null) return;
+
+    final note = await db.notesDao.getNoteForVisitedId(visitedWordId!);
+    if (note != null) {
+      setState(() {
+        controller.text = note.note;
+      });
+    }
   }
 
   @override
@@ -58,8 +76,8 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
     final DefinitionsService definitionsService = DefinitionsService(
       definitions: widget.the_word,
     );
-    final String kanji_word = widget.the_word.words[0].word;
-    final String kana_word = widget.the_word.words[0].reading;
+    final String kanjiWord = widget.the_word.words[0].word;
+    final String kanaWord = widget.the_word.words[0].reading;
     final List<String> definitions = widget.the_word.definition;
     final KanaKit kanaKit = KanaKit();
 
@@ -75,15 +93,15 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
           children: [
             Center(
               child: Text(
-                (kanji_word != null && kanji_word.isNotEmpty)
-                    ? kanji_word
-                    : kana_word,
+                (kanjiWord != null && kanjiWord.isNotEmpty)
+                    ? kanjiWord
+                    : kanaWord,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
 
-            fixedLabeledRow('Kana', kana_word),
-            fixedLabeledRow('Romaji', kanaKit.toRomaji(kana_word)),
+            fixedLabeledRow('Kana', kanaWord),
+            fixedLabeledRow('Romaji', kanaKit.toRomaji(kanaWord)),
 
             Text(
               'Meanings:',
@@ -92,7 +110,7 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
-                definitions.map((word) => '$word').join(', '),
+                definitions.map((word) => word).join(', '),
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -101,19 +119,46 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
               'Other Readings:',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
-            Text(
-              definitionsService
-                  .giveOtherReadings()
-                  .map((word) => '$word')
-                  .join('\n'),
-              style: TextStyle(fontSize: 16),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                definitionsService
+                    .giveOtherReadings()
+                    .map((word) => word)
+                    .join('\n'),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+
+            Text('Notes:', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            TextField(
+              controller: controller,
+              onChanged: (value) {
+                setState(() {
+                  if (visitedWordId != null) {
+                    db.notesDao.upsertNote(visitedWordId!, value);
+                  }
+                });
+              },
+              decoration: InputDecoration(
+                hintText: controller.text.isEmpty
+                    ? 'Enter notes here...'
+                    : null,
+                border: InputBorder.none,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),
+              maxLines: null,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          db.printVisitedWords();
+          // db.printVisitedWords();
+          // db.printNotesTable();
+          // db.clearDbTables();
         },
       ),
     );

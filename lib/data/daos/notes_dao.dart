@@ -8,11 +8,13 @@ part 'notes_dao.g.dart';
 class NotesDao extends DatabaseAccessor<DbHelper> with _$NotesDaoMixin {
   NotesDao(DbHelper db) : super(db);
 
-  Future<void> insertNote(NotesCompanion note) =>
-      into(notes).insertOnConflictUpdate(note);
+  Future<void> upsertNote(int visitedWordId, String note) =>
+      into(notes).insertOnConflictUpdate(
+        NotesCompanion(id: Value(visitedWordId), note: Value(note)),
+      );
 
   Future<Note?> getNoteForVisitedId(int visitedId) =>
       (select(notes)..where((n) => n.id.equals(visitedId))).getSingleOrNull();
 
-  
+  Future<List<Note>> getAllNotes() => select(notes).get();
 }

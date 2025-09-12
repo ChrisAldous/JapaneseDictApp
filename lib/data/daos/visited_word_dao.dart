@@ -12,17 +12,32 @@ class VisitedWordDao extends DatabaseAccessor<DbHelper>
   Future<List<VisitedWordData>> getAllVisitedWords() =>
       select(visitedWord).get();
 
+  Future<VisitedWordData?> getVisitedWord(String kanji, String kana) {
+    final query = select(visitedWord)
+      ..where((tbl) {
+        final kanjiMatch = kanji == null || kanji.isEmpty
+            ? tbl.kanji.isNull()
+            : tbl.kanji.equals(kanji);
+        return tbl.kana.equals(kana) & kanjiMatch;
+      });
+    return query.getSingleOrNull();
+  }
+
   Future<int> insertVisitedWord(VisitedWordCompanion word) {
     return into(visitedWord).insert(word, mode: InsertMode.insertOrIgnore);
   }
 
   Future<bool> recordExists({
-    required String kanji,
+    required String? kanji,
     required String kana,
   }) async {
     final query = select(visitedWord)
-      ..where((tbl) => tbl.kana.equals(kana) & tbl.kanji.equals(kanji));
-
+      ..where((tbl) {
+        final kanjiMatch = kanji == null || kanji.isEmpty
+            ? tbl.kanji.isNull()
+            : tbl.kanji.equals(kanji);
+        return tbl.kana.equals(kana) & kanjiMatch;
+      });
     return (await query.get()).isNotEmpty;
   }
 }

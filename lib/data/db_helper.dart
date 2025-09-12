@@ -46,6 +46,11 @@ class DbHelper extends _$DbHelper {
     }
   }
 
+  Future<void> printNotesTable() async {
+    final notes = await notesDao.getAllNotes();
+    print(notes);
+  }
+
   Future<void> clearDbTables() async {
     await batch((batch) {
       batch.deleteAll(visitedWord);
