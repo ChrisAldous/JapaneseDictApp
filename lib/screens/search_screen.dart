@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/data/definitions.dart';
 import 'package:japanese_dict/data/dictionary_service.dart';
+import 'package:japanese_dict/screens/widgets/custom_drawer.dart';
 import 'package:japanese_dict/screens/word_definition_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -37,6 +38,10 @@ class _SearchScreenState extends State<SearchScreen> {
           title: Text('Japanese Dictionary'),
         ),
       ),
+      // appBar: AppBar(
+      //     backgroundColor: const Color.fromARGB(255, 210, 24, 11),
+      //     title: Text('Japanese Dictionary')),
+      drawer: CustomDrawer(),
       body: Column(
         children: [
           Padding(
