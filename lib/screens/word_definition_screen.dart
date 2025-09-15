@@ -159,10 +159,19 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
           // db.printVisitedWords();
           // db.printNotesTable();
           // db.clearDbTables();
+          // openDialog();
         },
       ),
     );
   }
+
+  // Future openDialog() =>
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         title: Text("Save As FlashCard"),
+  //         content: 
+  //       ));
 
   Widget fixedLabeledRow(String label, String content) {
     return Padding(

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/data/daos/folders_dao.dart';
@@ -14,6 +15,7 @@ class FoldersScreen extends StatefulWidget {
 
 class _FoldersScreenState extends State<FoldersScreen> {
   late DbHelper db;
+  TextEditingController controller = TextEditingController();
   List<FlashFolder> folderList = [];
 
   @override
@@ -47,7 +49,13 @@ class _FoldersScreenState extends State<FoldersScreen> {
       drawer: CustomDrawer(),
       body: folderList.isEmpty
           ? Center(child: Text("No folders found."))
-          : ListView.builder(
+          : GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12.0,
+                mainAxisSpacing: 12.0,
+                childAspectRatio: 2.5,
+              ),
               itemCount: folderList.length,
               itemBuilder: (context, index) {
                 final folder = folderList[index];
@@ -62,11 +70,77 @@ class _FoldersScreenState extends State<FoldersScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // openDialog();
+          openDialog();
         },
         backgroundColor: Color.fromARGB(255, 210, 24, 11),
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
+
+  Future openDialog() => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Create new Folder"),
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: 'New folder name...',
+          border: const OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('CANCEL', style: TextStyle(color: Colors.red)),
+        ),
+        TextButton(
+          onPressed: () async {
+            final folder = controller.text.trim();
+
+            if (folder.isEmpty) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Folder name cannot be empty"),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+              return;
+            }
+
+            final exists = await db.foldersDao.recordExists(folderName: folder);
+
+            if (exists) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Folder named $folder already exists"),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            } else {
+              await db.foldersDao.insertFolder(
+                FlashFoldersCompanion(name: Value(folder)),
+              );
+
+              await _getFolderList();
+              controller.clear();
+              Navigator.of(context).pop();
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Successfully saved $folder into Folders!'),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
+          },
+          child: Text('SUBMIT', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
 }

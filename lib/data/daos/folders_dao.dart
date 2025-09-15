@@ -8,7 +8,7 @@ part 'folders_dao.g.dart';
 class FoldersDao extends DatabaseAccessor<DbHelper> with _$FoldersDaoMixin {
   FoldersDao(DbHelper db) : super(db);
 
-  Future<bool> doesRecordExist({required String folderName}) async {
+  Future<bool> recordExists({required String folderName}) async {
     final query = select(flashFolders)
       ..where((tbl) => tbl.name.equals(folderName));
     return (await query.get()).isNotEmpty;
