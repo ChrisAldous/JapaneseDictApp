@@ -155,23 +155,179 @@ class _WordDefinitionScreenState extends State<WordDefinitionScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // db.printVisitedWords();
-          // db.printNotesTable();
-          // db.clearDbTables();
-          // openDialog();
+        child: Icon(Icons.save),
+        onPressed: () async {
+          final folders = await db.foldersDao.getAllFolders();
+
+          await openSaveFlashcardDialog(
+            initialFrontKanji: widget.the_word.words[0].word,
+            initialFrontKana: widget.the_word.words[0].reading,
+            initialBack: widget.the_word.definition.join(', '),
+            folderList: folders,
+            onCreateNewFolder: () async {
+              // Show another dialog to get folder name
+              final nameController = TextEditingController();
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('New Folder'),
+                  content: TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(hintText: 'Enter folder name'),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(nameController.text);
+                      },
+                      child: Text('Create'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (result != null && result.trim().isNotEmpty) {
+                await db.foldersDao.insertFolder(
+                  FlashFoldersCompanion(name: drift.Value(result.trim())),
+                );
+              }
+            },
+
+            onSave:
+                ({
+                  required String frontKanji,
+                  required String frontKana,
+                  required String back,
+                  required int folderId,
+                }) async {
+                  await db.flashcardsDao.insertFlashCard(
+                    frontKanji,
+                    frontKana: frontKana,
+                    back: back,
+                    folderId: folderId,
+                  );
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Flashcard saved!')));
+                },
+          );
         },
       ),
     );
   }
 
-  // Future openDialog() =>
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //         title: Text("Save As FlashCard"),
-  //         content: 
-  //       ));
+  Future<void> openSaveFlashcardDialog({
+    required String initialFrontKanji,
+    required String initialFrontKana,
+    required String initialBack,
+    required List<FlashFolder> folderList,
+    required Future<void> Function() onCreateNewFolder,
+    required Future<void> Function({
+      required String frontKanji,
+      required String frontKana,
+      required String back,
+      required int folderId,
+    }) onSave,
+  }) async {
+    const int createNewFolderId = -1;
+
+    final kanjiController = TextEditingController(text: initialFrontKanji);
+    final kanaController = TextEditingController(text: initialFrontKana);
+    final backController = TextEditingController(text: initialBack);
+
+    int selectedFolderId = folderList.isEmpty ? createNewFolderId : folderList.first.id;
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          final dropdownItems = <DropdownMenuItem<int>>[
+            DropdownMenuItem(
+              value: createNewFolderId,
+              child: Text('➕ Create new folder'),
+            ),
+            ...folderList.map((folder) => DropdownMenuItem(
+                  value: folder.id,
+                  child: Text(folder.name),
+                )),
+          ];
+
+          bool isSaveEnabled =
+              selectedFolderId != createNewFolderId &&
+              kanaController.text.trim().isNotEmpty &&
+              backController.text.trim().isNotEmpty;
+
+          return AlertDialog(
+            title: Text("Save As FlashCard"),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<int>(
+                    value: selectedFolderId,
+                    isExpanded: true,
+                    onChanged: (value) async {
+                      if (value == createNewFolderId) {
+                        await onCreateNewFolder();
+                        Navigator.of(context).pop(); // close and reopen
+                        return;
+                      }
+                      setState(() {
+                        selectedFolderId = value!;
+                      });
+                    },
+                    items: dropdownItems,
+                  ),
+                  SizedBox(height: 12),
+
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Front Kanji (optional)'),
+                    controller: kanjiController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Front Kana'),
+                    controller: kanaController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Back'),
+                    controller: backController,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: isSaveEnabled
+                    ? () async {
+                        await onSave(
+                          frontKanji: kanjiController.text.trim(),
+                          frontKana: kanaController.text.trim(),
+                          back: backController.text.trim(),
+                          folderId: selectedFolderId,
+                        );
+                        Navigator.of(context).pop();
+                      }
+                    : null,
+                child: Text('Save'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   Widget fixedLabeledRow(String label, String content) {
     return Padding(

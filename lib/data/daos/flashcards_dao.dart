@@ -18,13 +18,13 @@ class FlashcardsDao extends DatabaseAccessor<DbHelper>
     String frontKanji, {
     required String frontKana,
     required String back,
-    required int deckId,
+    required int folderId,
   }) async {
     final card = FlashCardsCompanion(
       front_kanji: Value(frontKanji ?? ''),
       front_kana: Value(frontKana),
       back: Value(back),
-      folder: Value(deckId),
+      folder: Value(folderId),
     );
     return into(flashCards).insert(card);
   }

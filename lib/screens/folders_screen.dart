@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/data/daos/folders_dao.dart';
 import 'package:japanese_dict/data/tables/folders.dart';
+import 'package:japanese_dict/screens/flashcard_deck_screen.dart';
 import 'package:japanese_dict/screens/widgets/custom_drawer.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +64,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   leading: Icon(Icons.folder),
                   title: Text(folder.name),
                   onTap: () {
-                    // Navigate to that folder's flashcards
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => FlashcardDeckScreen(deckName: folder.name)
+                      )
+                    );
                   },
                 );
               },
