@@ -15,7 +15,9 @@ class FlashcardDeckScreen extends StatefulWidget {
 class _FlashcardDeckScreenState extends State<FlashcardDeckScreen> {
   late DbHelper db;
   late String deckTitle;
+  List<FlashCard> flashcards = [];
   int? folderId;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -24,7 +26,29 @@ class _FlashcardDeckScreenState extends State<FlashcardDeckScreen> {
 
     Future.microtask(() async {
       db = context.read<DbHelper>();
+      _getFolderIDByName(deckTitle);
     });
+  }
+
+  Future<void> _getFolderIDByName(String deckTitle) async {
+    final FlashFolder? folder = await db.foldersDao.selectedFolder(
+      folderName: deckTitle,
+    );
+
+    if (folder != null) {
+      final fetchedCards = await db.flashcardsDao.getAllFlashCardsInDeck(
+        folder.id,
+      );
+      setState(() {
+        folderId = folder.id;
+        flashcards = fetchedCards;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+    }
   }
 
   @override
@@ -38,7 +62,22 @@ class _FlashcardDeckScreenState extends State<FlashcardDeckScreen> {
         ),
       ),
       drawer: CustomDrawer(),
-      body: Placeholder(),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : flashcards.isEmpty
+          ? Center(child: Text('This deck is Empty'))
+          : ListView.builder(
+              itemCount: flashcards.length,
+              itemBuilder: (context, index) {
+                final card = flashcards[index];
+                return ListTile(
+                  title: Text(
+                    card.front_kanji
+                  ),
+                  subtitle: Text(card.back),
+                );
+              },
+            ),
     );
   }
 }

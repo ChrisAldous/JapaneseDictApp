@@ -66,8 +66,9 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   onTap: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (BuildContext context) => FlashcardDeckScreen(deckName: folder.name)
-                      )
+                        builder: (BuildContext context) =>
+                            FlashcardDeckScreen(deckName: folder.name),
+                      ),
                     );
                   },
                 );
@@ -76,6 +77,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           openDialog();
+          // db.printFlashCardTable();
         },
         backgroundColor: Color.fromARGB(255, 210, 24, 11),
         child: Icon(Icons.add, color: Colors.white),

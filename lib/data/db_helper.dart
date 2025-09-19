@@ -51,6 +51,11 @@ class DbHelper extends _$DbHelper {
     print(notes);
   }
 
+  Future<void> printFlashCardTable() async {
+    final cards = await flashcardsDao.getAllCards();
+    print(cards);
+  }
+
   Future<void> clearDbTables() async {
     await batch((batch) {
       batch.deleteAll(visitedWord);
