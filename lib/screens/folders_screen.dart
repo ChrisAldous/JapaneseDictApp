@@ -64,7 +64,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   leading: Icon(Icons.folder),
                   title: Text(folder.name),
                   onTap: () {
-                    Navigator.of(context).pushReplacement(
+                    Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) =>
                             FlashcardDeckScreen(deckName: folder.name),

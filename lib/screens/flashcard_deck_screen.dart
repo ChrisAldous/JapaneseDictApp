@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:japanese_dict/data/db_helper.dart';
 import 'package:japanese_dict/screens/widgets/custom_drawer.dart';
+import 'package:japanese_dict/screens/widgets/flip_flashcard.dart';
 import 'package:provider/provider.dart';
+import 'package:swipable_stack/swipable_stack.dart';
 
 class FlashcardDeckScreen extends StatefulWidget {
   final String deckName;
@@ -42,6 +44,7 @@ class _FlashcardDeckScreenState extends State<FlashcardDeckScreen> {
       setState(() {
         folderId = folder.id;
         flashcards = fetchedCards;
+        flashcards.shuffle();
         isLoading = false;
       });
     } else {
@@ -61,22 +64,38 @@ class _FlashcardDeckScreenState extends State<FlashcardDeckScreen> {
           title: Text('$deckTitle'),
         ),
       ),
-      drawer: CustomDrawer(),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : flashcards.isEmpty
           ? Center(child: Text('This deck is Empty'))
-          : ListView.builder(
-              itemCount: flashcards.length,
-              itemBuilder: (context, index) {
-                final card = flashcards[index];
-                return ListTile(
-                  title: Text(
-                    card.front_kanji
+          : SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 400,
+                        child: SwipableStack(
+                          itemCount: flashcards.length,
+                          detectableSwipeDirections: const {
+                            SwipeDirection.right,
+                            SwipeDirection.left,
+                          },
+                          stackClipBehaviour: Clip.none,
+                          onSwipeCompleted: (index, direction) {
+                            print('Swiped card $index: $direction');
+                          },
+                          builder: (context, properties) {
+                            final card = flashcards[properties.index];
+                            return FlipFlashcard(card: card);
+                          },
+                        ),
+                      ),
+                    ),
                   ),
-                  subtitle: Text(card.back),
-                );
-              },
+                ],
+              ),
             ),
     );
   }
