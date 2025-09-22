@@ -55,32 +55,77 @@ class _FoldersScreenState extends State<FoldersScreen> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12.0,
                 mainAxisSpacing: 12.0,
-                childAspectRatio: 2.5,
+                childAspectRatio: 1,
               ),
+
               itemCount: folderList.length,
               itemBuilder: (context, index) {
                 final folder = folderList[index];
-                return ListTile(
-                  leading: Icon(Icons.folder),
-                  title: Text(folder.name),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            FlashcardDeckScreen(deckName: folder.name),
-                      ),
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: CustomGridTiles(folder.name),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           openDialog();
-          // db.printFlashCardTable();
         },
         backgroundColor: Color.fromARGB(255, 210, 24, 11),
         child: Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget CustomGridTiles(String title) {
+    return InkWell(
+      onLongPress: () {
+        AlertDialog(
+          title: Text('Do you want to delete this Folder?'),
+          content: Text('All flashcards in folder will also be deleted'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: () {
+                
+              },
+              child: Text('DELETE')
+            ),
+          ],
+        );
+      },
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) =>
+                FlashcardDeckScreen(deckName: title),
+          ),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(12.0),
+        child: Stack(
+          alignment: AlignmentGeometry.center,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Icon(Icons.folder, size: 100, color: Colors.grey),
+            ),
+            Text(
+              '$title',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
