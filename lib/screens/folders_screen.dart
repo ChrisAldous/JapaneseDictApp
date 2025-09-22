@@ -79,7 +79,9 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
   Widget CustomGridTiles(String title) {
     return InkWell(
-      onLongPress: () {
+      onLongPress: () => showDialog(
+        context: context, 
+        builder: (context)=> 
         AlertDialog(
           title: Text('Do you want to delete this Folder?'),
           content: Text('All flashcards in folder will also be deleted'),
@@ -97,8 +99,8 @@ class _FoldersScreenState extends State<FoldersScreen> {
               child: Text('DELETE')
             ),
           ],
-        );
-      },
+        )
+      ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
