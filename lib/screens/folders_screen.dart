@@ -63,7 +63,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                 final folder = folderList[index];
                 return Padding(
                   padding: const EdgeInsets.all(18.0),
-                  child: CustomGridTiles(folder.name),
+                  child: CustomGridTiles(folder),
                 );
               },
             ),
@@ -77,12 +77,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
     );
   }
 
-  Widget CustomGridTiles(String title) {
+  Widget CustomGridTiles(FlashFolder folder) {
     return InkWell(
       onLongPress: () => showDialog(
-        context: context, 
-        builder: (context)=> 
-        AlertDialog(
+        context: context,
+        builder: (context) => AlertDialog(
           title: Text('Do you want to delete this Folder?'),
           content: Text('All flashcards in folder will also be deleted'),
           actions: [
@@ -93,19 +92,22 @@ class _FoldersScreenState extends State<FoldersScreen> {
               child: Text('CANCEL'),
             ),
             TextButton(
-              onPressed: () {
-                
+              onPressed: () async {
+                await db.flashcardsDao.deleteFlashCardByFolderId(folder.id);
+                await db.foldersDao.deleteFolderByName(folder.name);
+                await _getFolderList();
+                Navigator.of(context).pop();
               },
-              child: Text('DELETE')
+              child: Text('DELETE'),
             ),
           ],
-        )
+        ),
       ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) =>
-                FlashcardDeckScreen(deckName: title),
+                FlashcardDeckScreen(deckName: folder.name),
           ),
         );
       },
@@ -119,7 +121,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
               child: Icon(Icons.folder, size: 100, color: Colors.grey),
             ),
             Text(
-              '$title',
+              '${folder.name}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,

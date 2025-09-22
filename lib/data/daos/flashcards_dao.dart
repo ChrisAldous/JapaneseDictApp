@@ -33,5 +33,7 @@ class FlashcardsDao extends DatabaseAccessor<DbHelper>
     return into(flashCards).insert(card);
   }
 
-  // Future<int> deleteFlashCard() async {}
+  Future<int> deleteFlashCardByFolderId(int folderId) async {
+    return (delete(flashCards)..where((tbl) => tbl.folder.equals(folderId))).go();
+  }
 }
