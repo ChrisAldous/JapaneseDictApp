@@ -95,6 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                         },
                         child: ListTile(
+
                           title: ListTileTitle(title, reading),
                           subtitle: Text(subtitle),
                         ),
@@ -115,15 +116,41 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           Text(kanji, style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(width: 25),
-          Text(
-            '[$readings]',
-            style: TextStyle(
-              color: Colors.red,
-              // fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              overflow: TextOverflow.ellipsis,
+              '[$readings]',
+              style: TextStyle(
+                color: Colors.red,
+                // fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       );
+      // return Row(
+      //   children: [
+      //     Expanded(
+      //       flex: 2,
+      //       child: Text(
+      //         kanji,
+      //         style: TextStyle(fontWeight: FontWeight.bold),
+      //         overflow: TextOverflow.ellipsis,
+      //         maxLines: 1,
+      //       ),
+      //     ),
+      //     SizedBox(width: 12),
+      //     Expanded(
+      //       flex: 3,
+      //       child: Text(
+      //         '[$readings]',
+      //         style: TextStyle(color: Colors.red),
+      //         overflow: TextOverflow.ellipsis,
+      //         maxLines: 1,
+      //       ),
+      //     ),
+      //   ],
+      // );
     }
   }
 
